@@ -3,7 +3,7 @@ default[:monit][:logfile]               = "syslog facility log_daemon"
 default[:monit][:notify][:enable]       = false
 default[:monit][:notify][:email]        = "notify@example.com"
 
-default[:monit][:httpd][:enable]        = false
+default[:monit][:httpd][:enable]        = true
 default[:monit][:httpd][:port]          = 3737
 default[:monit][:httpd][:address]       = "localhost"
 default[:monit][:httpd][:allow]         = %w{localhost}
