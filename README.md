@@ -1,31 +1,108 @@
-# Overview #
+Overview
+========
+
 Chef cookbook for the [monit](http://mmonit.com/monit/) monitoring and
-management tool.
+management tool. This cookbook has been updated to configure services 
+defined in a data bag.
 
-# How to add to your cookbook repository #
+This cookbook was forked from [StudyBlue/monit](https://github.com/StudyBlue/monit), version 0.7.
 
-## Download the tarball ##
-It's up on the opscode
-[cookbook community](http://community.opscode.com/cookbooks/monit) site.
+Attributes
+==========
 
-## Vendor via knife ##
 
-    $ knife cookbook site download monit
+* `default[:monit][:services]` - List of items from the _monit_ data bag that describe services monitored by monit. For more info, see *Usage* below.
+* `default[:monit][:logfile]` - The file to which monit logs are written
+* `default[:monit][:notify][:enable]` - enable email notifications
+* `default[:monit][:notify][:email]` - the email to which notifications are sent.
+* `default[:monit][:httpd][:enable]` - enable the http server
+* `default[:monit][:httpd][:port]` - port on which the http server listens
+* `default[:monit][:httpd][:address]` - the address to which the server binds
+* `default[:monit][:httpd][:allow]` - the addresses from which connections are allowed (default `%w{localhost}`)
+* `default[:monit][:poll_period]` - the time (in seconds) between poll cycles
+* `default[:monit][:poll_start_delay]` - the amount of time (in seconds) before monit starts polling services.
+* `default[:monit][:mail][:server]` - host on which the smtp mail server runs
+* `default[:monit][:mail][:format][:subject]` - default subject for emails from monit
+* `default[:monit][:mail][:format][:from]` - email address from which messages are sent
+* `default[:monit][:mail][:format][:message]` - template for messages (see `attributes/default.rb` for details)
+* `default[:monit][:queue][:location]` - base directory where events will be stored
+* `default[:monit][:queue][:slots]` - limit the size of the queue; this is the number of messages that will be held
 
-## Track upstream changes via git ##
-I use git submodules for my chef repos so I can push/pull changes with minimal
-hassle.
+Usage
+=====
 
-For more info, check out the [Pro Git](http://progit.org/book/ch6-6.html) book.
+Right now, this cookbook only supports simple process monitoring. To set up process monitors, create a `monit` data bag, and create items that look similar to the following:
 
-#### Add the monit repo ####
+This would be `data_bags/monit/monit_services.json`:
 
-    $ cd YOUR_REPO_ROOT
-    $ git submodule add git://github.com/apsoto/monit.git cookbooks/monit
+    {
+      "id": "monit_services",
+      "postgresql": {
+        "process_name": "postgres",
+        "pidfile":      "/var/run/postgresql/9.1-main.pid",
+        "start_command":"/usr/sbin/service postgresql start",
+        "stop_command": "/usr/sbin/service postgresql stop",
+        "check_port": "5432",
+        "check_protocol": "pgsql",
+        "check_times": 2,
+        "within_cycles": 3,
+        "then_action": "restart"
+      },
+      "supervisor": {
+        "process_name": "supervisor",
+        "pidfile":      "/var/run/supervisord.pid",
+        "start_command":"/etc/init.d/supervisor start",
+        "stop_command":"/etc/init.d/supervisor stop",
+        "check_socket": "/var/run/supervisor.sock",
+        "check_times": 1,
+        "within_cycles": 2,
+        "then_action": "restart"
+      }
+    }
 
+This item would set up a monitor for the `postgres` and `supervisor` processes. Note that it checks for PostgreSQL using a TCP port while Supervisor uses a Unix socket.
+
+This would result in the following:
+* `/etc/monit/conf.d/postgresql.conf`:
+
+        CHECK PROCESS postgres WITH PIDFILE /var/run/postgresql/9.1-main.pid
+          START PROGRAM "/usr/sbin/service postgresql start"
+          STOP PROGRAM "/usr/sbin/service postgresql stop"
+          IF FAILED PORT 5432 PROTOCOL pgsql 2 TIMES WITHIN 3 CYCLES THEN restart
+
+* `/etc/monit/conf.d/supervisor.conf`:
+
+        CHECK PROCESS supervisor WITH PIDFILE /var/run/supervisord.pid
+          START PROGRAM "/etc/init.d/supervisor start"
+          STOP PROGRAM "/etc/init.d/supervisor stop"
+          IF FAILED unixsocket /var/run/supervisor.sock 1 TIMES WITHIN 2 CYCLES THEN restart
+
+You can then set up a role, and override any of the existing attributes, and specify any data bag items taht will be used to set up service monitoring.
+
+You might have a `monit` role that looks like:
+
+    name "monit"
+    description "Monit role"
+    run_list(
+      "recipe[monit::default]",
+      "recipe[monit::services]"
+    )
+
+    default_attributes(
+      "monit" => {
+        "services" => ["monit_services", ],
+      }
+    )
+    
 
 History
 =======
+
+version 0.8
+-----------
+ * added more generic services recipes that pulls configuration data from a data bag
+ * only supporting Ubuntu/Debian
+ * removed postfix/ssh recipes
 
 version 0.7
 -----------
