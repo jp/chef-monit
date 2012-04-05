@@ -1,3 +1,5 @@
+default[:monit][:services]              = [] # List of items from the "monit" data bag that
+                                             # describe services monitored by monit.
 default[:monit][:logfile]               = "syslog facility log_daemon"
 
 default[:monit][:notify][:enable]       = false
