@@ -9,29 +9,13 @@ if platform?("ubuntu")
   end
 end
 
-service_actions = value_for_platform(
-  ["centos", "redhat", "suse", "fedora"] => {
-    "default" => [ :enable ]
-  },
-  ["ubuntu", "debian"] => {
-    "default" => [ :enable, :start ]
-  }
-)
 service "monit" do
-  action service_actions
+  action [:enable, :start]
   enabled true
   supports [:start, :restart, :stop]
 end
 
-config_directory = value_for_platform(
-  ["centos", "redhat", "suse", "fedora"] => {
-    "default" => "/etc/monit.d"
-  },
-  ["ubuntu", "debian"] => {
-    "default" => "/etc/monit/conf.d"
-  }
-)
-directory config_directory do
+directory "/etc/monit/conf.d" do
   owner  'root'
   group 'root'
   mode 0755
@@ -39,13 +23,13 @@ directory config_directory do
   recursive true
 end
 
-template "/etc/monitrc" do
+template "/etc/monit/monitrc" do
   owner "root"
   group "root"
   mode 0700
   source 'monitrc.erb'
   variables(
-    :config_directory => config_directory
+    :config_directory => "/etc/monit/conf.d"
   )
   notifies :restart, resources(:service => "monit"), :delayed
 end
