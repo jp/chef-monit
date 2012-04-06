@@ -19,9 +19,18 @@ Attributes
 * `default[:monit][:httpd][:port]` - port on which the http server listens
 * `default[:monit][:httpd][:address]` - the address to which the server binds
 * `default[:monit][:httpd][:allow]` - the addresses from which connections are allowed (default `%w{localhost}`)
+* `default[:monit][:httpd][:signature]` - either "enable" or "disable". Determines whether monit shows a signature
+* `default[:monit][:httpd][:basic_auth_accounts]` - An array of `admin:"password"` entries that are used for HTTP Basic Auth. Not the quotes around the password; these are required.
 * `default[:monit][:poll_period]` - the time (in seconds) between poll cycles
 * `default[:monit][:poll_start_delay]` - the amount of time (in seconds) before monit starts polling services.
 * `default[:monit][:mail][:server]` - host on which the smtp mail server runs
+* `default[:monit][:mail][:port]` - The port on which the SMTP server runs (default is 25)
+* `default[:monit][:mail][:username]` - Username for an SMTP account
+* `default[:monit][:mail][:password]` - Password for an SMTP account
+* `default[:monit][:mail][:security]` - Send secure email. Must be one of: SSLV2, SSLV3 or TLSV1
+* `default[:monit][:mail][:checksum]` - SMTP Server certificat checksum (optional)
+* `default[:monit][:mail][:timeout]` - The timeout (in seconds) for sending mail
+* `default[:monit][:mail][:use_node_fqdn]` - Whether or not to use the node's FQDN in as the hostname (default is `false`)
 * `default[:monit][:mail][:format][:subject]` - default subject for emails from monit
 * `default[:monit][:mail][:format][:from]` - email address from which messages are sent
 * `default[:monit][:mail][:format][:message]` - template for messages (see `attributes/default.rb` for details)
