@@ -107,6 +107,11 @@ You might have a `monit` role that looks like:
 History
 =======
 
+version 0.8.1
+-------------
+ * added additional SMTP configuration
+ * added additional HTTPD configuration
+
 version 0.8
 -----------
  * added more generic services recipes that pulls configuration data from a data bag
