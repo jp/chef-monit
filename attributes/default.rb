@@ -13,7 +13,14 @@ default[:monit][:httpd][:allow]         = %w{localhost}
 default[:monit][:poll_period]           = 60
 default[:monit][:poll_start_delay]      = 120
 
-default[:monit][:mail][:server]           = "localhost"
+default[:monit][:mail][:server]         = "localhost"
+default[:monit][:mail][:port]           = "25"
+default[:monit][:mail][:username]       = nil
+default[:monit][:mail][:password]       = nil
+default[:monit][:mail][:security]       = nil # SSLV2, SSLV3 or TLSV1
+default[:monit][:mail][:checksum]       = nil # the server certificate checksum
+default[:monit][:mail][:timeout]        = "5" # timeout in seconds for the mail server 
+default[:monit][:mail][:use_node_fqdn]  = false # Use the Node's FQDN for "using hostname" 
 default[:monit][:mail][:format][:subject] = "$SERVICE $EVENT"
 default[:monit][:mail][:format][:from]    = "monit@example.com"
 default[:monit][:mail][:format][:message]    = <<-EOS

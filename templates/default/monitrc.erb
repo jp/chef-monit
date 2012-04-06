@@ -13,6 +13,15 @@ set eventqueue
 
 <% unless @node[:monit][:mail][:server].nil? %>
 set mailserver <%= @node[:monit][:mail][:server] %>
+    <%= "PORT #{@node[:monit][:mail][:port]}" unless not @node[:monit][:mail][:port] %>
+    <% if @node[:monit][:mail][:username] && @node[:monit][:mail][:password] %>
+    USERNAME <%= @node[:monit][:mail][:username] %> PASSWORD <%= @node[:monit][:mail][:password] %>
+    <% end %>
+    <%= "USING #{@node[:monit][:mail][:security]}" unless not @node[:monit][:mail][:security] %>
+    <%= "CERTMD5 #{@node[:monit][:mail][:checksum]}" unless not @node[:monit][:mail][:security] %>
+    <%= "with TIMEOUT #{@node[:monit][:mail][:timeout]} SECONDS" unless not @node[:monit][:mail][:timeout] %>
+    <%= "using HOSTNAME #{@node.fqdn}" unless not @node[:monit][:mail][:use_node_fqdn] %>
+
 set mail-format { 
   from: <%= @node[:monit][:mail][:format][:from] %>
   subject: <%= @node[:monit][:mail][:format][:subject] %>
