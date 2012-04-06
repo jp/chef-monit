@@ -7,8 +7,11 @@ default[:monit][:notify][:email]        = "notify@example.com"
 
 default[:monit][:httpd][:enable]        = true
 default[:monit][:httpd][:port]          = 3737
-default[:monit][:httpd][:address]       = "localhost"
+default[:monit][:httpd][:address]       = "localhost" # hosts can only connect from this address
 default[:monit][:httpd][:allow]         = %w{localhost}
+default[:monit][:httpd][:signature]     = "enable" # or disable
+default[:monit][:httpd][:basic_auth_accounts] = [] # a list of 'admin:"password"' entries to use for BasicAuth
+                                                   # the quotes around the password are required!
 
 default[:monit][:poll_period]           = 60
 default[:monit][:poll_start_delay]      = 120

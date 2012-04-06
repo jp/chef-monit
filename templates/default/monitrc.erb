@@ -43,6 +43,10 @@ set httpd port <%= @node[:monit][:httpd][:port] %> and
         allow <%= allow %>
         <% end %>
     <% end %>
+    signature <%= @node[:monit][:httpd][:signature] %>
+    <% @node[:monit][:httpd][:basic_auth_accounts].each do |auth| %>
+    allow <%= auth %>
+    <% end %>
 <% end %>
 
 include <%= @config_directory %>/*.conf
