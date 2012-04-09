@@ -1,52 +1,51 @@
-set daemon <%= @node[:monit][:poll_period] %>
-  with start delay <%= @node[:monit][:poll_start_delay] %>
+set daemon <%= @poll_period %> with start delay <%= @poll_start_delay %>
 
-<% unless @node[:monit][:logfile].nil? %>
-set logfile <%= @node[:monit][:logfile] %>
-<% end %>
+<% unless @logfile.nil? %>set logfile <%= @logfile %><% end %>
 
 set eventqueue
-    basedir <%= @node[:monit][:queue][:location] %>  # set the base directory where events will be stored
-    <% unless @node[:monit][:queue][:slots].nil? %>
-    slots <%= @node[:monit][:queue][:slots] %> # optionally limit the queue size
-    <% end %>
+    basedir <%= @queue[:location] %>
+    <% unless @queue[:slots].nil? %>slots <%= @queue[:slots] %><% end %>
 
-<% unless @node[:monit][:mail][:server].nil? %>
-set mailserver <%= @node[:monit][:mail][:server] %>
-    <%= "PORT #{@node[:monit][:mail][:port]}" unless not @node[:monit][:mail][:port] %>
-    <% if @node[:monit][:mail][:username] && @node[:monit][:mail][:password] -%>
-    USERNAME <%= @node[:monit][:mail][:username] %> PASSWORD "<%= @node[:monit][:mail][:password] %>"
+<% unless @mail[:server].nil? %>
+set mailserver <%= @mail[:server] %>
+    <%= "PORT #{@mail[:port]}" unless not @mail[:port] %>
+    <% if @mail[:username] && @mail[:password] -%>
+    USERNAME <%= @mail[:username] %> PASSWORD "<%= @mail[:password] %>"
     <% end -%>
-    <%= "USING #{@node[:monit][:mail][:security]}" unless not @node[:monit][:mail][:security] %>
-    <%= "CERTMD5 #{@node[:monit][:mail][:checksum]}" unless not @node[:monit][:mail][:security] %>
-    <%= "with TIMEOUT #{@node[:monit][:mail][:timeout]} SECONDS" unless not @node[:monit][:mail][:timeout] %>
-    <%= "using HOSTNAME #{@node.fqdn}" unless not @node[:monit][:mail][:use_node_fqdn] %>
+    <%= "USING #{@mail[:security]}" unless not @mail[:security] %>
+    <%= "CERTMD5 #{@mail[:checksum]}" unless not @mail[:security] %>
+    <%= "with TIMEOUT #{@mail[:timeout]} SECONDS" unless not @mail[:timeout] %>
+    <%= "using HOSTNAME #{@node.fqdn}" unless not @mail[:use_node_fqdn] %>
 
 set mail-format { 
-  <% if @node[:monit][:mail][:format][:from] %>from: <%= @node[:monit][:mail][:format][:from] %>
+  <% if @mail[:format][:from] %>from: <%= @mail[:format][:from] %>
   <% else %>from: monit@<%= @node.fqdn %><% end %>
-  subject: <%= @node[:monit][:mail][:format][:subject] %>
-  message: <%= @node[:monit][:mail][:format][:message] %>
+  subject: <%= @mail[:format][:subject] %>
+  message: <%= @mail[:format][:message] %>
 }
 <% end %>
 
-<% if @node[:monit][:notify][:enable] %>
-set alert <%= @node[:monit][:notify][:email] %> NOT ON { action, instance, pid, ppid }
+<% if @notify[:enable] %>
+set alert <%= @notify[:email] %> NOT ON { action, instance, pid, ppid }
 <% end %>
 
-<% if @node[:monit][:httpd][:enable] %>
-set httpd port <%= @node[:monit][:httpd][:port] %> and
-    <% if @node[:monit][:httpd][:address] %>
-    use address <%= @node[:monit][:httpd][:address] %>
+<% if @httpd[:enable] %>
+set httpd port <%= @httpd[:port] %> and
+    <% if @httpd[:address] %>
+    use address <%= @httpd[:address] %>
     <% end %>
-    <% if @node[:monit][:httpd][:allow] %>
-        <% @node[:monit][:httpd][:allow].each do |allow| %>
+    <% if @httpd[:allow] %>
+        <% @httpd[:allow].each do |allow| %>
         allow <%= allow %>
         <% end %>
     <% end %>
-    signature <%= @node[:monit][:httpd][:signature] %>
-    <% @node[:monit][:httpd][:basic_auth_accounts].each do |auth| %>
-    allow "<%= auth %>"
+    signature <%= @httpd[:signature] %>
+    <% @httpd[:basic_auth_accounts].each do |auth| %>
+    <%# 
+    NOTE: auth entries are of the form "username:password", but passwords
+    need to be quoted in the monit config:  'username:"password"'
+    -%>
+    allow <%= auth.split(":").first -%>:"<%= auth.split(":").last -%>"
     <% end %>
 <% end %>
 
