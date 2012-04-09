@@ -7,8 +7,8 @@ default[:monit][:notify][:email]        = "notify@example.com"
 
 default[:monit][:httpd][:enable]        = true
 default[:monit][:httpd][:port]          = 3737
-default[:monit][:httpd][:address]       = "localhost" # hosts can only connect from this address
-default[:monit][:httpd][:allow]         = %w{localhost}
+default[:monit][:httpd][:address]       = nil # hosts can only connect from this address; monit defaults to "localhost"
+default[:monit][:httpd][:allow]         = nil # default: %w{localhost}
 default[:monit][:httpd][:signature]     = "enable" # or disable
 default[:monit][:httpd][:basic_auth_accounts] = [] # a list of 'admin:"password"' entries to use for BasicAuth
                                                    # the quotes around the password are required!
@@ -25,7 +25,7 @@ default[:monit][:mail][:checksum]       = nil # the server certificate checksum
 default[:monit][:mail][:timeout]        = "5" # timeout in seconds for the mail server 
 default[:monit][:mail][:use_node_fqdn]  = false # Use the Node's FQDN for "using hostname" 
 default[:monit][:mail][:format][:subject] = "$SERVICE $EVENT"
-default[:monit][:mail][:format][:from]    = "monit@example.com"
+default[:monit][:mail][:format][:from]    = nil  # defaults to "monit@hostname"
 default[:monit][:mail][:format][:message]    = <<-EOS
 Monit $ACTION $SERVICE at $DATE on $HOST: $DESCRIPTION.
 Yours sincerely,
