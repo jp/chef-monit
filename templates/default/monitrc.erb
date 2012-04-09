@@ -14,16 +14,17 @@ set eventqueue
 <% unless @node[:monit][:mail][:server].nil? %>
 set mailserver <%= @node[:monit][:mail][:server] %>
     <%= "PORT #{@node[:monit][:mail][:port]}" unless not @node[:monit][:mail][:port] %>
-    <% if @node[:monit][:mail][:username] && @node[:monit][:mail][:password] %>
-    USERNAME <%= @node[:monit][:mail][:username] %> PASSWORD <%= @node[:monit][:mail][:password] %>
-    <% end %>
+    <% if @node[:monit][:mail][:username] && @node[:monit][:mail][:password] -%>
+    USERNAME <%= @node[:monit][:mail][:username] %> PASSWORD "<%= @node[:monit][:mail][:password] %>"
+    <% end -%>
     <%= "USING #{@node[:monit][:mail][:security]}" unless not @node[:monit][:mail][:security] %>
     <%= "CERTMD5 #{@node[:monit][:mail][:checksum]}" unless not @node[:monit][:mail][:security] %>
     <%= "with TIMEOUT #{@node[:monit][:mail][:timeout]} SECONDS" unless not @node[:monit][:mail][:timeout] %>
     <%= "using HOSTNAME #{@node.fqdn}" unless not @node[:monit][:mail][:use_node_fqdn] %>
 
 set mail-format { 
-  from: <%= @node[:monit][:mail][:format][:from] %>
+  <% if @node[:monit][:mail][:format][:from] %>from: <%= @node[:monit][:mail][:format][:from] %>
+  <% else %>from: monit@<%= @node.fqdn %><% end %>
   subject: <%= @node[:monit][:mail][:format][:subject] %>
   message: <%= @node[:monit][:mail][:format][:message] %>
 }
@@ -35,17 +36,17 @@ set alert <%= @node[:monit][:notify][:email] %> NOT ON { action, instance, pid, 
 
 <% if @node[:monit][:httpd][:enable] %>
 set httpd port <%= @node[:monit][:httpd][:port] %> and
-    <% unless @node[:monit][:httpd][:address].nil? %>
+    <% if @node[:monit][:httpd][:address] %>
     use address <%= @node[:monit][:httpd][:address] %>
     <% end %>
-    <% unless @node[:monit][:httpd][:allow].nil? %>
+    <% if @node[:monit][:httpd][:allow] %>
         <% @node[:monit][:httpd][:allow].each do |allow| %>
         allow <%= allow %>
         <% end %>
     <% end %>
     signature <%= @node[:monit][:httpd][:signature] %>
     <% @node[:monit][:httpd][:basic_auth_accounts].each do |auth| %>
-    allow <%= auth %>
+    allow "<%= auth %>"
     <% end %>
 <% end %>
 
