@@ -10,7 +10,7 @@ node['monit']['services'].each do |item_name|
 
     services.each do |service, service_config|
         
-      # TODO: don't use the monitrc definition. Instead,
+      # Don't use the monitrc definition. Instead,
       # just write a new template.
       if service != "id"        
         template "/etc/monit/conf.d/#{service}.conf" do 
