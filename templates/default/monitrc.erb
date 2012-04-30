@@ -13,7 +13,7 @@ set mailserver <%= @mail[:server] %>
     USERNAME <%= @mail[:username] %> PASSWORD "<%= @mail[:password] %>"
     <% end -%>
     <%= "USING #{@mail[:security]}" unless not @mail[:security] %>
-    <%= "CERTMD5 #{@mail[:checksum]}" unless not @mail[:security] %>
+    <%= "CERTMD5 #{@mail[:checksum]}" unless not @mail[:checksum] %>
     <%= "with TIMEOUT #{@mail[:timeout]} SECONDS" unless not @mail[:timeout] %>
     <%= "using HOSTNAME #{@node.fqdn}" unless not @mail[:use_node_fqdn] %>
 
