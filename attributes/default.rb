@@ -2,8 +2,11 @@ default[:monit][:services]              = [] # List of items from the "monit" da
                                              # describe services monitored by monit.
 default[:monit][:logfile]               = "syslog facility log_daemon"
 
-default[:monit][:notify][:enable]       = false
-default[:monit][:notify][:email]        = "notify@example.com"
+# The following is a list of events for which monit will send notifications:
+default[:monit][:notify][:events]       = []
+default[:monit][:notify][:negate_events]= false # if true, will negate the list of notification events
+default[:monit][:notify][:enable]       = false # set true to send alerts
+default[:monit][:notify][:email]        = "notify@example.com" # address to which alerts are sent
 
 default[:monit][:httpd][:enable]        = true
 default[:monit][:httpd][:port]          = 3737
