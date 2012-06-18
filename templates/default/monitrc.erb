@@ -21,7 +21,7 @@ set mail-format {
   <% if @mail[:format][:from] %>from: <%= @mail[:format][:from] %>
   <% else %>from: monit@<%= @node.fqdn %><% end %>
   subject: <%= @mail[:format][:subject] %>
-  message: <%= @mail[:format][:message] %>
+  message: <%= @mail[:format][:message].to_s.strip %>
 }
 <% end %>
 
