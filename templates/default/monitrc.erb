@@ -26,9 +26,11 @@ set mail-format {
 <% end %>
 
 <% if @notify[:enable] %>
-set alert <%= @notify[:email] %> <%= "NOT" if @notify[:negate_events] -%> ON { 
+    <% @notify[:email].each do |email| %>
+set alert <%= email %> <%= "NOT" if @notify[:negate_events] -%> ON {
     <%= @notify[:events].join(", ") %>
 }
+    <% end %>
 <% end %>
 
 <% if @httpd[:enable] %>
